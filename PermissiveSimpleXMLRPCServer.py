@@ -10,8 +10,7 @@ class PermissiveSimpleXMLRPCServer(SimpleXMLRPCServer):
         return SimpleXMLRPCServer._marshaled_dispatch(self,
             data, *args, **kwargs)
 
-if __name__ == '__main__':
-    port = 8000
+def start_test_server(port):
     print 'Running permissive XML-RPC server on port %d' % port
     server = PermissiveSimpleXMLRPCServer(("localhost", port))
     def log(msg):
@@ -21,3 +20,6 @@ if __name__ == '__main__':
     server.register_function(lambda x,y: x+y, 'add')
     server.register_function(lambda s: s.upper(), 'upper')
     server.serve_forever()
+
+if __name__ == '__main__':
+    start_test_server(8000)
