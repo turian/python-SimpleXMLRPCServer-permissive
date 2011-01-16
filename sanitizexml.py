@@ -32,7 +32,7 @@ def sanitize_xml(data, log=None):
     >>> def log(msg): print msg
     ...
     >>> sanitize_xml('hello\\0world', log)
-    First disallowed character found: u'\\x00' at position 44
+    Found first disallowed character u'\\x00' at position 44
     '<?xml version="1.0" encoding="UTF-8"?>helloworld'
 
 
@@ -42,7 +42,7 @@ def sanitize_xml(data, log=None):
     ... '<?xml version="1.0" encoding="UTF-8"?><hello>\\x7f</hello>')
     '<?xml version="1.0" encoding="UTF-8"?><hello>\\x7f</hello>'
     >>> sanitize_xml('<?xml version="1.1"?><hello>\\x7f</hello>', log)
-    First disallowed character found: u'\\x7f' at position 46
+    Found first disallowed character u'\\x7f' at position 46
     '<?xml version="1.1" encoding="UTF-8"?><hello></hello>'
 
 
@@ -61,7 +61,7 @@ def sanitize_xml(data, log=None):
     unless we use XML 1.1 where it is properly disallowed and so stripped:
 
     >>> sanitize_xml(u'<?xml version="1.1" ?>hello\u0080world', log)
-    First disallowed character found: u'\\x80' at position 44
+    Found first disallowed character u'\\x80' at position 44
     '<?xml version="1.1" encoding="UTF-8"?>helloworld'
     """
 
