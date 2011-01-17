@@ -1,7 +1,9 @@
+#!/usr/bin/env python
+
 import threading
 import xmlrpclib
 
-import PermissiveSimpleXMLRPCServer
+import PermissiveSimpleXMLRPCServer.PermissiveSimpleXMLRPCServer as PermissiveSimpleXMLRPCServer
 
 port = 8000
 
