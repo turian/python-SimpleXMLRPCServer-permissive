@@ -1,18 +1,8 @@
 #!/usr/bin/env python
 
-import threading
 import xmlrpclib
 
-import PermissiveSimpleXMLRPCServer.PermissiveSimpleXMLRPCServer as PermissiveSimpleXMLRPCServer
-
-port = 8000
-
-thead = threading.Thread(
-    target=PermissiveSimpleXMLRPCServer.start_test_server, args=(port,))
-thead.daemon = True
-thead.start()
-
-p = xmlrpclib.ServerProxy("http://localhost:%d/" % port)
+p = xmlrpclib.ServerProxy("http://localhost:8000/")
 
 # Well-formed requests
 assert p.upper('foo bar') == 'FOO BAR'
