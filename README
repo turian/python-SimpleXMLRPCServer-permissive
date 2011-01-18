@@ -1,0 +1,19 @@
+ PermissiveSimpleXMLRPCServer
+
+This is a version of SimpleXMLRPCServer that tries to accept incoming requests that don't fully conform to the XML specifications. Specifically, it strips out characters in the incoming data that aren't allowed in XML. It works properly with XML 1.0 and 1.1. The XML cleaning code is separated out into its own sanitizexml module, and that can be used independently of the XML-RPC server if you have other XML sanitizing needs.
+
+PermissiveSimpleXMLRPCServer is used in exactly the same way as the regular SimpleXMLRPCServer, i.e.
+
+    server = PermissiveSimpleXMLRPCServer(("localhost", 8000))
+    server.register_function(lambda x,y: x+y, 'add')
+    server.serve_forever()
+
+It is also capable of logging warnings whenever it has to strip out bad characters, and to turn that on just set the xml_warning_logger attribute to something that can be called with a single parameter, which is the log message:
+
+    def log(msg):
+        print msg
+    server.xml_warning_logger = log
+
+
+The sanitizexml module requires Beautiful Soup (for the UnicodeDammit class):
+http://www.crummy.com/software/BeautifulSoup/
