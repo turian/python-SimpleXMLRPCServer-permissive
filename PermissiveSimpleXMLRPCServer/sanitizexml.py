@@ -159,7 +159,7 @@ def sanitize_xml(data, log=None):
         c = unichr(int(m.group(2), 16 if m.group(1) == 'x' else 10))
 
         if disallowed_as_references.match(c):
-            if not logged_first:
+            if log and not logged_first:
                 log(('Found first disallowed character reference %s ' +
                     'at position %d') % (
                         m.group(0), m.start() + 1))
