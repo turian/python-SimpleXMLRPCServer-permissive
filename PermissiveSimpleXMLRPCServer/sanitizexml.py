@@ -63,6 +63,15 @@ def sanitize_xml(data, log=None):
     >>> sanitize_xml(u'<?xml version="1.1" ?>hello\u0080world', log)
     Found first disallowed character u'\\x80' at position 44
     '<?xml version="1.1" encoding="UTF-8"?>helloworld'
+
+    >>> sanitize_xml('<hello>&#xB;</hello>', log)
+    Found first disallowed character reference &#xB; at position 46
+    '<?xml version="1.0" encoding="UTF-8"?><hello></hello>'
+    >>> sanitize_xml(u'<?xml version="1.1"?><hello>&#xB;</hello>', log)
+    '<?xml version="1.1" encoding="UTF-8"?><hello>&#xB;</hello>'
+    >>> sanitize_xml('<hello>&#x0;&#x01;&#x007;</hello>', log)
+    Found first disallowed character reference &#x0; at position 46
+    '<?xml version="1.0" encoding="UTF-8"?><hello></hello>'
     """
 
     if isinstance(data, unicode):
@@ -114,7 +123,17 @@ def sanitize_xml(data, log=None):
     else:
         allowed = allowed + u'\x85'
 
-    disallowed = re.compile('[^' + allowed + ']')
+    allowed_as_references = allowed
+    if version != 0:
+        allowed_as_references = allowed_as_references + u'\x01-\x1f\x7f-\x9f'
+
+    everything_but = '[^%s]'
+    disallowed = re.compile(
+        everything_but % allowed)
+    disallowed_as_references = re.compile(
+        everything_but % allowed_as_references)
+
+    logged_first = False
 
     skip_replacement = False
     if log:
@@ -122,6 +141,7 @@ def sanitize_xml(data, log=None):
         if m:
             log('Found first disallowed character %s at position %d' % (
                 repr(m.group(0)), m.start() + 1))
+            logged_first = True
         else:
             # no point searching again in a moment
             skip_replacement = True
@@ -129,8 +149,27 @@ def sanitize_xml(data, log=None):
     if not skip_replacement:
         u = disallowed.sub('', u)
 
-    return u.encode('utf_8')
+    reference = re.compile('&#(x)?0*([0-9a-fA-F]+);')
+    search_pos = 0
+    while True:
+        m = reference.search(u, search_pos)
+        if not m:
+            break
 
+        c = unichr(int(m.group(2), 16 if m.group(1) == 'x' else 10))
+
+        if disallowed_as_references.match(c):
+            if not logged_first:
+                log(('Found first disallowed character reference %s ' +
+                    'at position %d') % (
+                        m.group(0), m.start() + 1))
+                logged_first = True
+            u = u[:m.start()] + u[m.end():]
+            search_pos = m.start()
+        else:
+            search_pos = m.end()
+
+    return u.encode('utf_8')
 
 if __name__ == '__main__':
     import doctest
