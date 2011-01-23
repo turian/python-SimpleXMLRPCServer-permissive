@@ -72,6 +72,9 @@ def sanitize_xml(data, log=None):
     >>> sanitize_xml('<hello>&#x0;&#x01;&#x007;</hello>', log)
     Found first disallowed character reference &#x0; at position 46
     '<?xml version="1.0" encoding="UTF-8"?><hello></hello>'
+    >>> sanitize_xml('<hello>&#x0a;&#xd;&#0;blah&#7;&#13;</hello>', log)
+    Found first disallowed character reference &#0; at position 57
+    '<?xml version="1.0" encoding="UTF-8"?><hello>&#x0a;&#xd;blah&#13;</hello>'
     """
 
     if isinstance(data, unicode):
