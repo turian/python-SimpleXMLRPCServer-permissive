@@ -1,3 +1,10 @@
+python-SimpleXMLRPCServer-permissive
+====================================
+
+copyright (C) 2011, MetaOptimize
+released under a BSD license
+
+
  PermissiveSimpleXMLRPCServer
 
 This is a version of SimpleXMLRPCServer that tries to accept incoming requests that don't fully conform to the XML specifications. Specifically, it strips out characters in the incoming data that aren't allowed in XML. It works properly with XML 1.0 and 1.1. The XML cleaning code is separated out into its own sanitizexml module, and that can be used independently of the XML-RPC server if you have other XML sanitizing needs.
